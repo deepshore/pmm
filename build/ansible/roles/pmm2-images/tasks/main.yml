@@ -1,7 +1,8 @@
 ---
-    - name: show type
+    - name: show virtualization_type
       debug:
-        var: ansible_virtualization_type
+        var: ansible_facts.virtualization_type
+
     - name: Packages                   | Add PMM2 Server YUM repository
       yum_repository:
         name: pmm2-server
@@ -13,7 +14,7 @@
 
     # local yum repo for building of pmm server docker image in autobuild jobs
     - name: PMM                        | Add local YUM repository
-      when: ansible_virtualization_type == "docker"
+      when: ansible_facts.virtualization_type | default('') not in ['docker', 'container', 'containerd']
       yum_repository:
         name: local
         description: Local YUM repository - x86_64
@@ -73,7 +74,7 @@
             - { name: grafana, uid: 1998, comment: "Grafana Dashboard", shell: "/sbin/nologin", home: "/etc/grafana", group: grafana }
             - { name: clickhouse, uid: 1997, comment: "Clickhouse server", shell: "/sbin/nologin", home: "/var/lib/clickhouse", group: clickhouse }
             - { name: pmm-agent, uid: 1996, comment: "pmm-agent", shell: "/bin/false", home: "/usr/local/percona/", group: pmm-agent }
-      when: ansible_virtualization_type == "docker"
+      when: ansible_facts.virtualization_type | default('') not in ['docker', 'container', 'containerd']
 
     - name: Create directories        | Create dirs
       file: path={{ item }} state=directory owner=pmm group=pmm
@@ -91,7 +92,7 @@
         mode: '0775'
 
     - name: Create dirs                | Create dirs
-      when: ansible_virtualization_type == "docker"
+      when: ansible_facts.virtualization_type | default('') not in ['docker', 'container', 'containerd']
       file: path={{ item }} state=directory
       with_items:
         - /var/lib/cloud/scripts/per-once
@@ -127,6 +128,14 @@
           - pmm2-client
         state: installed
         enablerepo: "{{ pmm_client_repo_name }}"
+
+    - name: Disable pmm-agent service | Disable pmm-agent
+      when: ansible_facts.virtualization_type | default('') not in ['docker', 'container', 'containerd']
+      service: name=pmm-agent state=stopped enabled=no
+
+    - name: Create tmp dirs           | Create tmp dirs
+      when: ansible_facts.virtualization_type | default('') not in ['docker', 'container', 'containerd']
+      command: /usr/bin/systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
 
     - name: Copy grafana.ini file for the first run
       copy:
