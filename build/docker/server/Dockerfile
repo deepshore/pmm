@@ -1,4 +1,5 @@
-FROM redhat/ubi8
+FROM centos:7
+# quay.io/centos/centos:stream8
 
 ARG VERSION
 ARG BUILD_DATE
@@ -18,26 +19,8 @@ EXPOSE 80 443
 
 WORKDIR /opt
 
-# Silence subscription messages.
-RUN echo "enabled=0" >> /etc/yum/pluginconf.d/subscription-manager.conf
+RUN yum -y install epel-release && yum -y install ansible
 
-# Install requirements.
-RUN dnf -y install \
-      sudo \
-      which \
-      hostname \
-      python3 \
-      python3-devel \
-      libffi-devel \
- && dnf clean all
-
-# Install ansible via pip3
-RUN pip3 install --upgrade pip 
-RUN pip3 install \
-    setuptools-rust \
-    ansible
-
-#COPY docker/server/PERCONA-PACKAGING-KEY /etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
 
 
 COPY ansible /opt/ansible
