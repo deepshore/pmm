@@ -1,4 +1,7 @@
 ---
+    - name: show type
+      debug:
+        var: ansible_virtualization_type
     - name: Packages                   | Add PMM2 Server YUM repository
       yum_repository:
         name: pmm2-server
