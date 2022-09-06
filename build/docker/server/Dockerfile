@@ -37,8 +37,8 @@ RUN pip3 install \
     setuptools-rust \
     ansible
 
-COPY RPMS /tmp/RPMS
-COPY gitCommit /tmp/gitCommit
+#COPY docker/server/PERCONA-PACKAGING-KEY /etc/pki/rpm-gpg/PERCONA-PACKAGING-KEY
+
 
 COPY ansible /opt/ansible
 RUN cp -r /opt/ansible/roles /opt/ansible/pmm2-docker/roles
