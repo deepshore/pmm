@@ -21,6 +21,10 @@ WORKDIR /opt
 
 RUN yum -y install epel-release && yum -y install ansible
 
+# unconditioned script copy tasks needs this dir
+# https://github.com/percona/pmm-update/blob/main/ansible/playbook/tasks/roles/nginx/tasks/main.yml#L35
+RUN mkdir -p /var/lib/cloud/scripts/per-boot
+
 COPY ansible /opt/ansible
 RUN cp -r /opt/ansible/roles /opt/ansible/pmm2-docker/roles
 RUN ansible-playbook -vvv -i 'localhost,' -c local /opt/ansible/pmm2-docker/main.yml && \
