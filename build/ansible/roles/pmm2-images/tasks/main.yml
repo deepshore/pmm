@@ -74,7 +74,7 @@
             - { name: grafana, uid: 998, comment: "Grafana Dashboard", shell: "/sbin/nologin", home: "/etc/grafana", group: grafana }
             - { name: clickhouse, uid: 997, comment: "Clickhouse server", shell: "/sbin/nologin", home: "/var/lib/clickhouse", group: clickhouse }
             - { name: pmm-agent, uid: 996, comment: "pmm-agent", shell: "/bin/false", home: "/usr/local/percona/", group: pmm-agent }
-      when: ansible_facts.virtualization_type | default('') in ['docker', 'container', 'containerd']
+      when: ansible_facts.virtualization_type | default('') in ['docker', 'container', 'containerd', 'kvm']
 
     - name: Create directories        | Create dirs
       file: path={{ item }} state=directory owner=pmm group=pmm
