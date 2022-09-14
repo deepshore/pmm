@@ -31,6 +31,6 @@ RUN ansible-playbook -vvv -i 'localhost,' -c local /opt/ansible/pmm2-docker/main
 ansible-playbook -vvv -i 'localhost,' -c local /usr/share/pmm-update/ansible/playbook/tasks/update.yml && \ 
 ansible-playbook -vvv -i 'localhost,' -c local /opt/ansible/pmm2/post-build-actions.yml
 
-COPY entrypoint.sh /opt/entrypoint.sh
+COPY docker/server/entrypoint.sh /opt/entrypoint.sh
 HEALTHCHECK --interval=3s --timeout=2s --start-period=10s --retries=3 CMD curl -f http://127.0.0.1/v1/readyz || exit 1
 CMD ["/opt/entrypoint.sh"]
